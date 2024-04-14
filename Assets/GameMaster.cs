@@ -557,20 +557,23 @@ public class NewBehaviourScript : MonoBehaviour
         permutation[2]=2;
         permutation[3]=3;
 
-        for(int i = 0; i < Random.Range(10,20); i++) 
+        for(int i = 0; i < Random.Range(15,20); i++) 
         {
             int a =Random.Range(0,4);
             int b=Random.Range(0,4);
-            (permutation[a],permutation[b])=(permutation[a],permutation[b]);
+            (permutation[a],permutation[b])=(permutation[b],permutation[a]);
         }
+        
+        tournamentPlayerOrder.Add(aIs[permutation[0]]);
+        tournamentPlayerOrder.Add(aIs[permutation[1]]);
+        tournamentPlayerOrder.Add(aIs[permutation[2]]);
+        tournamentPlayerOrder.Add(aIs[permutation[3]]);
 
-        // Temporaer
-        tournamentPlayerOrder.Add(aIs[0]);
-        tournamentPlayerOrder.Add(aIs[1]);
-        tournamentPlayerOrder.Add(aIs[2]);
-        tournamentPlayerOrder.Add(aIs[3]);
-
-
+        Debug.Log("Tournament Player Order shuffeled (shown in next 4 debuglogs):");
+        Debug.Log(tournamentPlayerOrder[0].name);
+        Debug.Log(tournamentPlayerOrder[1].name);
+        Debug.Log(tournamentPlayerOrder[2].name);
+        Debug.Log(tournamentPlayerOrder[3].name);
 
 
     }
