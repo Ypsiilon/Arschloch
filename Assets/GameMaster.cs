@@ -94,7 +94,7 @@ public class NewBehaviourScript : MonoBehaviour
             }
             if (cards[g].GetComponent<CardData>().value == 15)
             {
-                tmp += "Joker";
+                tmp += "Joker\n";
             }
             else
             {
@@ -102,19 +102,19 @@ public class NewBehaviourScript : MonoBehaviour
             }
             if (cards[g].GetComponent<CardData>().colour == 0)
             {
-                tmp += " Hearts";
+                tmp += " Hearts\n";
             }
             if (cards[g].GetComponent<CardData>().colour == 1)
             {
-                tmp += " Diamonds";
+                tmp += " Diamonds\n";
             }
             if (cards[g].GetComponent<CardData>().colour == 2)
             {
-                tmp += " Clubs";
+                tmp += " Clubs\n";
             }
             if (cards[g].GetComponent<CardData>().colour == 3)
             {
-                tmp += " Spades";
+                tmp += " Spades\n";
             }
         }
         return tmp;
@@ -225,52 +225,7 @@ public class NewBehaviourScript : MonoBehaviour
             }
             else
             {
-                String play = "";
-                String tmp = "";
-                for (int g = 0; g < lastCardsPlayed.Count; g++)
-                {
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 11)
-                    {
-                        tmp += "Jack of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 12)
-                    {
-                        tmp += "Queen of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 13)
-                    {
-                        tmp += "King of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 14)
-                    {
-                        tmp += "Ace of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 15)
-                    {
-                        tmp += "Joker";
-                    }
-                    else
-                    {
-                        tmp += lastCardsPlayed[g].GetComponent<CardData>().value.ToString();
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 0)
-                    {
-                        tmp += "Hearts";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 1)
-                    {
-                        tmp += "Diamonds";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 2)
-                    {
-                        tmp += "Clubs";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 3)
-                    {
-                        tmp += "Spades";
-                    }
-                    play = tmp;
-                }
+                String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 0 played: " + play);
             }
         }
@@ -302,52 +257,7 @@ public class NewBehaviourScript : MonoBehaviour
             }
             else
             {
-                String play = "";
-                String tmp = "";
-                for (int g = 0; g < lastCardsPlayed.Count; g++)
-                {
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 11)
-                    {
-                        tmp += "Jack of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 12)
-                    {
-                        tmp += "Queen of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 13)
-                    {
-                        tmp += "King of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 14)
-                    {
-                        tmp += "Ace of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 15)
-                    {
-                        tmp += "Joker";
-                    }
-                    else
-                    {
-                        tmp += lastCardsPlayed[g].GetComponent<CardData>().value.ToString();
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 0)
-                    {
-                        tmp += "Hearts";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 1)
-                    {
-                        tmp += "Diamonds";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 2)
-                    {
-                        tmp += "Clubs";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 3)
-                    {
-                        tmp += "Spades";
-                    }
-                    play = tmp;
-                }
+                String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 1 played: " + play);
             }
         }
@@ -379,52 +289,7 @@ public class NewBehaviourScript : MonoBehaviour
             }
             else
             {
-                String play = "";
-                String tmp = "";
-                for (int g = 0; g < lastCardsPlayed.Count; g++)
-                {
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 11)
-                    {
-                        tmp += "Jack of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 12)
-                    {
-                        tmp += "Queen of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 13)
-                    {
-                        tmp += "King of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 14)
-                    {
-                        tmp += "Ace of";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 15)
-                    {
-                        tmp += "Joker";
-                    }
-                    else
-                    {
-                        tmp += lastCardsPlayed[g].GetComponent<CardData>().value.ToString();
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 0)
-                    {
-                        tmp += "Hearts";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 1)
-                    {
-                        tmp += "Diamonds";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 2)
-                    {
-                        tmp += "Clubs";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 3)
-                    {
-                        tmp += "Spades";
-                    }
-                    play = tmp;
-                }
+                String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 2 played: " + play);
             }
         }
@@ -456,52 +321,7 @@ public class NewBehaviourScript : MonoBehaviour
             }
             else
             {
-                String play = "";
-                String tmp = "";
-                for (int g = 0; g < lastCardsPlayed.Count; g++)
-                {
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 11)
-                    {
-                        tmp += "Jack of ";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 12)
-                    {
-                        tmp += "Queen of ";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 13)
-                    {
-                        tmp += "King of ";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 14)
-                    {
-                        tmp += "Ace of ";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().value == 15)
-                    {
-                        tmp += "Joker";
-                    }
-                    else
-                    {
-                        tmp += lastCardsPlayed[g].GetComponent<CardData>().value.ToString() + " of ";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 0)
-                    {
-                        tmp += "Hearts";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 1)
-                    {
-                        tmp += "Diamonds";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 2)
-                    {
-                        tmp += "Clubs";
-                    }
-                    if (lastCardsPlayed[g].GetComponent<CardData>().colour == 3)
-                    {
-                        tmp += "Spades";
-                    }
-                    play = tmp;
-                }
+                String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 3 played: " + play);
             }
         }
