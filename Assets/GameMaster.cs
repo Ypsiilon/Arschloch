@@ -23,6 +23,8 @@ public class NewBehaviourScript : MonoBehaviour
 
     private bool turnZero;
 
+    private GameObject roundWinner;
+
     public GameObject[] winIndex;
 
     private List<GameObject> previousTurn;
@@ -125,6 +127,8 @@ public class NewBehaviourScript : MonoBehaviour
         // Set Match Participants
         participatingAIsCurrentMatch.AddRange(tournamentPlayerOrder);
 
+        roundWinner = new GameObject(); 
+
         Debug.Log(GetCardsString(deck));
         deck = ShuffleCards(deck);
         Debug.Log(GetCardsString(deck));
@@ -153,20 +157,40 @@ public class NewBehaviourScript : MonoBehaviour
     {
         turnZero = true;
         int w = 0;
+        participatingAIsCurrentRound.Clear();
         participatingAIsCurrentRound.AddRange(participatingAIsCurrentMatch);
-        while (participatingAIsCurrentRound.Count > 1)
+        
+        if (roundWinner!=null)
+        { 
+            for(int i = 0;i < 4;i++) 
+            {
+                if (roundWinner == participatingAIsCurrentRound[i])
+                {
+                    w = i;
+                }
+            }
+        }
+        int r = 0;
+
+        while (participatingAIsCurrentRound.Count > 1 && r < 50 )
         {
+            int tempCount = participatingAIsCurrentRound.Count;
+
             StartTurn(w);
             turnZero = false;
-            if (w < participatingAIsCurrentRound.Count)
+
+            if (tempCount == participatingAIsCurrentRound.Count)
             {
                 w++;
             }
-            else
-            {
-                w = 0;
-            }
+            r++;
+            w = w % participatingAIsCurrentRound.Count;
+            
         }
+        // bestimme roundWinner
+        roundWinner = participatingAIsCurrentRound[0];
+        Debug.Log("RoundWinner is: " + roundWinner.name);
+
     }
 
     public void GivePoints()
@@ -190,7 +214,7 @@ public class NewBehaviourScript : MonoBehaviour
 
     public void StartTurn(int aIIndex)
     {
-        GameObject currentPlayer = aIs[aIIndex];
+        GameObject currentPlayer = participatingAIsCurrentRound[aIIndex];
 
         if (lastCardsPlayed.Count != 0)
         {
@@ -208,6 +232,7 @@ public class NewBehaviourScript : MonoBehaviour
             if (handAI[0].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
+                participatingAIsCurrentRound.Remove(currentPlayer);
                 Debug.Log("Player 0 finished");
                 for (int k = 0; k < winIndex.Length; k++)
                 {
@@ -285,6 +310,7 @@ public class NewBehaviourScript : MonoBehaviour
             if (handAI[1].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
+                participatingAIsCurrentRound.Remove(currentPlayer);
                 Debug.Log("Player 1 finished");
                 for (int k = 0; k < winIndex.Length; k++)
                 {
@@ -362,6 +388,7 @@ public class NewBehaviourScript : MonoBehaviour
             if (handAI[2].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
+                participatingAIsCurrentRound.Remove(currentPlayer);
                 Debug.Log("Player 2 finished");
                 for (int k = 0; k < winIndex.Length; k++)
                 {
@@ -439,6 +466,7 @@ public class NewBehaviourScript : MonoBehaviour
             if (handAI[3].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
+                participatingAIsCurrentRound.Remove(currentPlayer);
                 Debug.Log("Player 3 finished");
                 for (int k = 0; k < winIndex.Length; k++)
                 {
@@ -545,7 +573,9 @@ public class NewBehaviourScript : MonoBehaviour
             Debug.Log("DiscardPile was turned into new deck");
         }
 
-
+        // Reset 
+        participatingAIsCurrentMatch.Clear();
+        participatingAIsCurrentRound.Clear();
 
     }
 
