@@ -1,20 +1,22 @@
 # Brainstorming Daten
 
 ## Daten, welche den KIs zugaenglich sein sollen.
+### Input
 - PlayerOrder
-  - TurnZero bool
-  - Index(Array)
-  - GewinnIndex(Array)
-- discardPile(List\<Karte\>)
-  - TopKarten
+  - TurnZero ``Boolean``
+  - Index ``Array``
+  - GewinnIndex ``Array``
+- discardPile ``List<Karte>``
+  - TopKarten `List<Karte>`
+### Output
 - Zug
-  - Karten(Array\<Karte\>)
-- Eigene Karten(Array\<Karte\>)
-  - Abgegebene Karten(Array\<Karte\>)
+  - Karten ``List<Karte>``
+- Eigene Karten ``List<Karte>``
+  - Abgegebene Karten `List<Karte>`
 
 ## Karte
-- Farbe(int)
-- Wert(int)
+- Farbe ``int``
+- Wert ``int``
 
 ## MatchHierarchy
 - Life
