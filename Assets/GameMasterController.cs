@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class NewBehaviourScript : MonoBehaviour
+public class GameMasterController : MonoBehaviour
 {
     public int tournamentCount = 5;
     public int matchCount = 5;
@@ -60,20 +60,24 @@ public class NewBehaviourScript : MonoBehaviour
             Debug.Log("Tournament " + i + " started.");
             StartTournament();
         }
+        for (int i = 0; i < 4; i++)
+        {
+            Debug.Log("AI "+i+" got "+points[i]+" Points!");
+        }
     }
 
     public void StartTournament()
     {
         SetNewTournamentPlayerOrder();
 
-        for (int i = 0; i < matchCount; i++)
+        for (int l = 0; l < matchCount; l++)
         {
-            Debug.Log("Match " + i + " started.");
+            Debug.Log("Match  " + l + " started.");
             StartMatch();
         }
     }
 
-    public static String GetCardsString(List<GameObject> cards)
+    public String GetCardsString(List<GameObject> cards)
     {
         String tmp = "";
         for (int g = 0; g < cards.Count; g++)
@@ -127,7 +131,7 @@ public class NewBehaviourScript : MonoBehaviour
         // Set Match Participants
         participatingAIsCurrentMatch.AddRange(tournamentPlayerOrder);
 
-        roundWinner = new GameObject(); 
+        roundWinner = null; 
 
         Debug.Log(GetCardsString(deck));
         deck = ShuffleCards(deck);
@@ -150,6 +154,9 @@ public class NewBehaviourScript : MonoBehaviour
                 Debug.Log("Last player returned his cards to the discardPile.");
             }
         }
+        Debug.Log("deck:" + deck.Count);
+        Debug.Log("discardPile: "+ discardPile.Count);
+        GivePoints();
         ResetMatchVariables();
     }
 
@@ -162,7 +169,7 @@ public class NewBehaviourScript : MonoBehaviour
         
         if (roundWinner!=null)
         { 
-            for(int i = 0;i < 4;i++) 
+            for(int i = 0;i < participatingAIsCurrentRound.Count;i++) 
             {
                 if (roundWinner == participatingAIsCurrentRound[i])
                 {
@@ -170,9 +177,8 @@ public class NewBehaviourScript : MonoBehaviour
                 }
             }
         }
-        int r = 0;
 
-        while (participatingAIsCurrentRound.Count > 1 && r < 50 )
+        while (participatingAIsCurrentRound.Count > 1 )
         {
             int tempCount = participatingAIsCurrentRound.Count;
 
@@ -183,13 +189,16 @@ public class NewBehaviourScript : MonoBehaviour
             {
                 w++;
             }
-            r++;
             w = w % participatingAIsCurrentRound.Count;
             
         }
         // bestimme roundWinner
         roundWinner = participatingAIsCurrentRound[0];
         Debug.Log("RoundWinner is: " + roundWinner.name);
+        for (int i = 0; i < handAI.Length; i++)
+        {
+            //Debug.Log("Player " + i + "s Hand: " + GetCardsString(handAI[i]));
+        }
 
     }
 
@@ -224,11 +233,6 @@ public class NewBehaviourScript : MonoBehaviour
         if (currentPlayer.CompareTag("0"))
         {
             lastCardsPlayed.Clear();
-            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
-            for (int i = 0; i < lastCardsPlayed.Count; i++)
-            {
-                handAI[0].Remove(lastCardsPlayed[i]);
-            }
             if (handAI[0].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
@@ -242,6 +246,13 @@ public class NewBehaviourScript : MonoBehaviour
                         break;
                     }
                 }
+            }
+            Debug.Log("AI0 Hand Cards"+gameObject.GetComponent<GameMasterController>().GetCardsString(currentPlayer.GetComponent<BasicAI>().sortedHandCards));
+            Debug.Log("Player " + 0 + "s Hand: " + GetCardsString(handAI[0]));
+            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
+            for (int i = 0; i < lastCardsPlayed.Count; i++)
+            {
+                handAI[0].Remove(lastCardsPlayed[i]);
             }
             if (lastCardsPlayed.Count == 0)
             {
@@ -257,11 +268,6 @@ public class NewBehaviourScript : MonoBehaviour
         else if (currentPlayer.CompareTag("1"))
         {
             lastCardsPlayed.Clear();
-            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
-            for (int i = 0; i < lastCardsPlayed.Count; i++)
-            {
-                handAI[1].Remove(lastCardsPlayed[i]);
-            }
             if (handAI[1].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
@@ -275,6 +281,11 @@ public class NewBehaviourScript : MonoBehaviour
                         break;
                     }
                 }
+            }
+            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
+            for (int i = 0; i < lastCardsPlayed.Count; i++)
+            {
+                handAI[1].Remove(lastCardsPlayed[i]);
             }
             if (lastCardsPlayed.Count == 0)
             {
@@ -290,11 +301,6 @@ public class NewBehaviourScript : MonoBehaviour
         else if (currentPlayer.CompareTag("2"))
         {
             lastCardsPlayed.Clear();
-            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
-            for (int i = 0; i < lastCardsPlayed.Count; i++)
-            {
-                handAI[2].Remove(lastCardsPlayed[i]);
-            }
             if (handAI[2].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
@@ -308,6 +314,11 @@ public class NewBehaviourScript : MonoBehaviour
                         break;
                     }
                 }
+            }
+            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
+            for (int i = 0; i < lastCardsPlayed.Count; i++)
+            {
+                handAI[2].Remove(lastCardsPlayed[i]);
             }
             if (lastCardsPlayed.Count == 0)
             {
@@ -323,11 +334,6 @@ public class NewBehaviourScript : MonoBehaviour
         else if (currentPlayer.CompareTag("3"))
         {
             lastCardsPlayed.Clear();
-            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
-            for (int i = 0; i < lastCardsPlayed.Count; i++)
-            {
-                handAI[3].Remove(lastCardsPlayed[i]);
-            }
             if (handAI[3].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
@@ -342,6 +348,11 @@ public class NewBehaviourScript : MonoBehaviour
                     }
                 }
             }
+            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
+            for (int i = 0; i < lastCardsPlayed.Count; i++)
+            {
+                handAI[3].Remove(lastCardsPlayed[i]);
+            }
             if (lastCardsPlayed.Count == 0)
             {
                 participatingAIsCurrentRound.Remove(currentPlayer);
@@ -353,6 +364,7 @@ public class NewBehaviourScript : MonoBehaviour
                 Debug.Log("Player 3 played: " + play);
             }
         }
+        discardPile.AddRange(lastCardsPlayed);
     }
 
     // -------------------------------------------------------
@@ -361,10 +373,14 @@ public class NewBehaviourScript : MonoBehaviour
 
     public void ResetMatchVariables()
     {
+        // Reset 
+        participatingAIsCurrentMatch.Clear();
+        participatingAIsCurrentRound.Clear();
+
         // Check for CurrentAIs in Match
-        if (participatingAIsCurrentMatch.Count != 0)
+        if (participatingAIsCurrentMatch.Count > 0)
         {
-            Debug.Log("Oops. Something went wrong. The Matc is over, but there are players left");
+            Debug.Log("Oops. Something went wrong. The Match is over, but there are players left");
         }
 
         // Check for HandsEmpty
@@ -381,11 +397,11 @@ public class NewBehaviourScript : MonoBehaviour
         {
             Debug.Log("Oooops. Something went wrong. The deck has not zero cards, where it should have zero cards");
         }
-        else if (discardPile.Count != 55)
+        else if (discardPile.Count != 56)
         {
-            Debug.Log("Oooops. Something went wrong. The discardPile has not 55 cards, where it should have 55 cards");
+            Debug.Log("Oooops. Something went wrong. The discardPile has not 56 cards, where it should have 56 cards");
         }
-        else if (deck.Count == 0 && discardPile.Count == 55)
+        else if (deck.Count == 0 && discardPile.Count == 56)
         {
             deck.AddRange(discardPile);
             discardPile.Clear();
@@ -393,9 +409,6 @@ public class NewBehaviourScript : MonoBehaviour
             Debug.Log("DiscardPile was turned into new deck");
         }
 
-        // Reset 
-        participatingAIsCurrentMatch.Clear();
-        participatingAIsCurrentRound.Clear();
 
     }
 
@@ -488,7 +501,7 @@ public class NewBehaviourScript : MonoBehaviour
             {
                 aIs[i].GetComponent<BasicAI>().PreStart();
             }
-            for (int j = 0; j < 13; j++)
+            for (int j = 0; j < 14; j++)
             {
                 handAI[i].Add(deck[0]);
                 deck.RemoveAt(0);
