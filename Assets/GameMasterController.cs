@@ -96,54 +96,7 @@ public class GameMasterController : MonoBehaviour
         yield return null;
     }
 
-    public String GetCardsString(List<GameObject> cards)
-    {
-        String tmp = "";
-        for (int g = 0; g < cards.Count; g++)
-        {
-            if (cards[g].GetComponent<CardData>().value == 11)
-            {
-                tmp += "Jack of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 12)
-            {
-                tmp += "Queen of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 13)
-            {
-                tmp += "King of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 14)
-            {
-                tmp += "Ace of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 15)
-            {
-                tmp += "Joker\n";
-            }
-            else
-            {
-                tmp += cards[g].GetComponent<CardData>().value.ToString() + " of";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 0)
-            {
-                tmp += " Hearts\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 1)
-            {
-                tmp += " Diamonds\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 2)
-            {
-                tmp += " Clubs\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 3)
-            {
-                tmp += " Spades\n";
-            }
-        }
-        return tmp;
-    }
+
 
     public void StartMatch()
     {
@@ -151,7 +104,7 @@ public class GameMasterController : MonoBehaviour
         // Set Match Participants
         participatingAIsCurrentMatch.AddRange(tournamentPlayerOrder);
 
-        roundWinner = null; 
+        roundWinner = null;
 
         Debug.Log(GetCardsString(deck));
         deck = ShuffleCards(deck);
@@ -186,10 +139,10 @@ public class GameMasterController : MonoBehaviour
         int w = 0;
         participatingAIsCurrentRound.Clear();
         participatingAIsCurrentRound.AddRange(participatingAIsCurrentMatch);
-        
+
         if (roundWinner!=null)
-        { 
-            for(int i = 0;i < participatingAIsCurrentRound.Count;i++) 
+        {
+            for(int i = 0;i < participatingAIsCurrentRound.Count;i++)
             {
                 if (roundWinner == participatingAIsCurrentRound[i])
                 {
@@ -210,7 +163,7 @@ public class GameMasterController : MonoBehaviour
                 w++;
             }
             w = w % participatingAIsCurrentRound.Count;
-            
+
         }
         // bestimme roundWinner
         roundWinner = participatingAIsCurrentRound[0];
@@ -222,50 +175,7 @@ public class GameMasterController : MonoBehaviour
 
     }
 
-    public void GivePoints()
-    {
 
-
-
-        List<GameObject> winSup = new List<GameObject>();
-        winSup.Add(aIs[0]);
-        winSup.Add(aIs[1]);
-        winSup.Add(aIs[2]);
-        winSup.Add(aIs[3]);
-
-
-
-        for (int i = 0; i < 3; i++)
-        {
-            winSup.Remove(winIndex[i]);
-        }
-        winIndex[3] = winSup[0];
-
-
-        Debug.Log("k" + winIndex[0].name);
-        Debug.Log("k" + winIndex[1].name);
-        Debug.Log("k" + winIndex[2].name);
-        Debug.Log("k" + winIndex[3].name);
-
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                if (winIndex[i] == aIs[j])
-                {
-                    points[j] += 3 - i;
-                    Debug.Log("Rundenposition" + (i + 1) + "hat AI" + j + "belegt");
-
-                }
-
-            }
-            winIndex2[i] = winIndex[i];
-        }
-        gameObject.transform.GetChild(4).GetChild(0).gameObject.GetComponent<GraphScript>().UpdateGraph(points);
-
-        winIndex = new GameObject[4];
-
-    }
 
     public void StartTurn(int aIIndex)
     {
@@ -414,12 +324,102 @@ public class GameMasterController : MonoBehaviour
     }
 
     // -------------------------------------------------------
-    // Basale Funktionen innerhalb eines Matches 
+    public void GivePoints()
+    {
 
+
+
+        List<GameObject> winSup = new List<GameObject>();
+        winSup.Add(aIs[0]);
+        winSup.Add(aIs[1]);
+        winSup.Add(aIs[2]);
+        winSup.Add(aIs[3]);
+
+
+
+        for (int i = 0; i < 3; i++)
+        {
+            winSup.Remove(winIndex[i]);
+        }
+        winIndex[3] = winSup[0];
+
+
+        Debug.Log("k" + winIndex[0].name);
+        Debug.Log("k" + winIndex[1].name);
+        Debug.Log("k" + winIndex[2].name);
+        Debug.Log("k" + winIndex[3].name);
+
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (winIndex[i] == aIs[j])
+                {
+                    points[j] += 3 - i;
+                    Debug.Log("Rundenposition" + (i + 1) + "hat AI" + j + "belegt");
+
+                }
+
+            }
+            winIndex2[i] = winIndex[i];
+        }
+        gameObject.transform.GetChild(4).GetChild(0).gameObject.GetComponent<GraphScript>().UpdateGraph(points);
+
+        winIndex = new GameObject[4];
+
+    }
+    public String GetCardsString(List<GameObject> cards)
+    {
+        String tmp = "";
+        for (int g = 0; g < cards.Count; g++)
+        {
+            if (cards[g].GetComponent<CardData>().value == 11)
+            {
+                tmp += "Jack of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 12)
+            {
+                tmp += "Queen of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 13)
+            {
+                tmp += "King of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 14)
+            {
+                tmp += "Ace of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 15)
+            {
+                tmp += "Joker\n";
+            }
+            else
+            {
+                tmp += cards[g].GetComponent<CardData>().value.ToString() + " of";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 0)
+            {
+                tmp += " Hearts\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 1)
+            {
+                tmp += " Diamonds\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 2)
+            {
+                tmp += " Clubs\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 3)
+            {
+                tmp += " Spades\n";
+            }
+        }
+        return tmp;
+    }
 
     public void ResetMatchVariables()
     {
-        // Reset 
+        // Reset
         participatingAIsCurrentMatch.Clear();
         participatingAIsCurrentRound.Clear();
 
@@ -466,13 +466,13 @@ public class GameMasterController : MonoBehaviour
         permutation[2]=2;
         permutation[3]=3;
 
-        for(int i = 0; i < Random.Range(15,20); i++) 
+        for(int i = 0; i < Random.Range(15,20); i++)
         {
             int a =Random.Range(0,4);
             int b=Random.Range(0,4);
             (permutation[a],permutation[b])=(permutation[b],permutation[a]);
         }
-        
+
         tournamentPlayerOrder.Add(aIs[permutation[0]]);
         tournamentPlayerOrder.Add(aIs[permutation[1]]);
         tournamentPlayerOrder.Add(aIs[permutation[2]]);
@@ -584,7 +584,7 @@ public class GameMasterController : MonoBehaviour
     {
 
         int[] pos = new int[4];
-        
+
         SortAllHands();
 
         if (winIndex2.Length != 0)
@@ -621,7 +621,7 @@ public class GameMasterController : MonoBehaviour
             Debug.Log("Player " + 2 + "s Hand: " + GetCardsString(handAI[2]));
             Debug.Log("Player " + 3 + "s Hand: " + GetCardsString(handAI[3]));
         }
-        else 
+        else
         {
             Debug.Log("wrong!");
         }
@@ -632,7 +632,7 @@ public class GameMasterController : MonoBehaviour
 
     private void SortAllHands()
     {
-        
+
         for (int j = 0; j < 4; j++)
         {
             List<GameObject> sortCards = new List<GameObject>();
