@@ -432,7 +432,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -7729165226687494766, guid: 80a1b4051d6201c4bb38059111f61701, type: 3}
       propertyPath: matchCount
-      value: 10000
+      value: 2000
       objectReference: {fileID: 0}
     - target: {fileID: -7729165226687494766, guid: 80a1b4051d6201c4bb38059111f61701, type: 3}
       propertyPath: aIs.Array.size

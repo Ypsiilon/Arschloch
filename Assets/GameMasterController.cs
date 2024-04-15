@@ -24,6 +24,7 @@ public class GameMasterController : MonoBehaviour
 
     private bool turnZero;
     private bool notFirstMatch;
+    private bool firstRound;
     private GameObject[] winIndex2 = new GameObject[4];
 
     private GameObject roundWinner;
@@ -121,7 +122,7 @@ public class GameMasterController : MonoBehaviour
             {
                 tmp += "Joker\n";
             }
-            else
+            if(cards[g].GetComponent<CardData>().value>1 && cards[g].GetComponent<CardData>().value<11)
             {
                 tmp += cards[g].GetComponent<CardData>().value.ToString() + " of";
             }
@@ -141,6 +142,10 @@ public class GameMasterController : MonoBehaviour
             {
                 tmp += " Spades\n";
             }
+            if (cards[g].GetComponent<CardData>().colour == 4)
+            {
+                tmp += " Joker\n";
+            }
         }
         return tmp;
     }
@@ -157,10 +162,19 @@ public class GameMasterController : MonoBehaviour
         deck = ShuffleCards(deck);
         Debug.Log(GetCardsString(deck));
         GiveCards();
-
+        int k = 0;
         while (participatingAIsCurrentMatch.Count > 1)
         {
+            if (k == 0)
+            {
+                firstRound = true;
+            }
+            else
+            {
+                firstRound = false;
+            }
             StartRound();
+            k++;
         }
 
         // Letzter Spieler hat Karten uebrig. Lege diese Karten auf DiscardPile
@@ -182,10 +196,22 @@ public class GameMasterController : MonoBehaviour
 
     public void StartRound()
     {
-        turnZero = true;
-        int w = 0;
         participatingAIsCurrentRound.Clear();
         participatingAIsCurrentRound.AddRange(participatingAIsCurrentMatch);
+
+        turnZero = true;
+        int w = 0;
+
+        if (firstRound && notFirstMatch)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (winIndex2[3] == participatingAIsCurrentRound[i])
+                {
+                    w = i;
+                }
+            }
+        }
         
         if (roundWinner!=null)
         { 
