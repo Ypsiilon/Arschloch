@@ -10,7 +10,7 @@ public class CardData : MonoBehaviour
     public int value; // 2-10 = 2-10, 11 = Jack, 12 = Queen, 13 = King, 14 = Ace, 15 = Joker
 
     public void setColour(int x) {
-        if(x != 4) colour = x;
+        if(this.colour != 4) colour = x;
     }
     public void setValue(int x) {
         if(value == 0 || this.colour == 4) value = x;

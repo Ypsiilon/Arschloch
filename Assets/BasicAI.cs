@@ -10,7 +10,7 @@ public class BasicAI : MonoBehaviour, Interface
 
     private bool played;
 
-    private List<GameObject> sortedHandCards;
+    public List<GameObject> sortedHandCards;
     private List<GameObject> cardsToPlay;
 
     public void PreStart()
@@ -32,24 +32,34 @@ public class BasicAI : MonoBehaviour, Interface
         played=false;
         cardsToPlay.Clear();
 
+        if(sortedHandCards.Count == 0)
+        {
+            return cardsToPlay;
+        }
+
         if(turnZero == true)
         {
             int count=0;
             int lowestValue=0;
-
+            //Debug.Log("lolo"+sortedHandCards.Count);
             lowestValue=sortedHandCards[0].GetComponent<CardData>().value;
             int i = 0;
+            //Debug.Log(this.transform.parent.GetComponent<GameMasterController>().GetCardsString(sortedHandCards));
             while(sortedHandCards[i].GetComponent<CardData>().value == lowestValue)
             {
                 count++;
                 i++;
+                if (i >= sortedHandCards.Count)
+                {
+                    break;
+                }
             }
             for (int j =0 ;j < count ;j++)
             {
             cardsToPlay.Add(sortedHandCards[j]);
             }
 
-            for (int j =0 ;j <= count ;j++)
+            for (int j =0 ;j < count ;j++)
             {
             sortedHandCards.RemoveAt(0);
             }
