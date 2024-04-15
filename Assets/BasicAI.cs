@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicAI : MonoBehaviour
+public class BasicAI : MonoBehaviour, Interface
 {
     private List<GameObject> handCards;
     public List<GameObject> swappedCards;
@@ -13,11 +13,6 @@ public class BasicAI : MonoBehaviour
     public List<GameObject> sortedHandCards;
     private List<GameObject> cardsToPlay;
 
-
-    void Start()
-    {
-        
-    }
     public void PreStart()
     {
         handCards = new List<GameObject>();
@@ -127,7 +122,7 @@ public class BasicAI : MonoBehaviour
 
     private void JokerToAce()
     {
-         foreach (GameObject handCard in handCards)
+        foreach (GameObject handCard in handCards)
             {
                 if(handCard.GetComponent<CardData>().value == 15)
                 {
