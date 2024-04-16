@@ -153,12 +153,11 @@ public class GameMasterController : MonoBehaviour
     {
         participatingAIsCurrentRound.Clear();
         participatingAIsCurrentRound.AddRange(participatingAIsCurrentMatch);
-
         turnZero = true;
         int w = 0;
 
 
-        //Arschloch f�ngt an 
+        //Arschloch faengt an 
         if (firstRound && notFirstMatch)
         {
             for (int i = 0; i < 4; i++)
@@ -170,7 +169,7 @@ public class GameMasterController : MonoBehaviour
             }
         }
         
-        //Gewinner letzter Runde f�ngt an
+        //Gewinner letzter Runde faengt an
         if (roundWinner!=null)
         {
             for(int i = 0;i < participatingAIsCurrentRound.Count;i++)
@@ -203,8 +202,8 @@ public class GameMasterController : MonoBehaviour
             }
         }
         playerFinished = false;
-
-        while ((participatingAIsCurrentRound.Count > 1) || (playerFinished && participatingAIsCurrentRound.Count >0))
+        roundWinner = null;
+        while ((participatingAIsCurrentMatch.Count != 1) && ((participatingAIsCurrentRound.Count > 1) || (playerFinished && participatingAIsCurrentRound.Count >0)))
         {
             int tempCount = participatingAIsCurrentRound.Count;
 
@@ -224,21 +223,11 @@ public class GameMasterController : MonoBehaviour
                 Debug.Log("One Player Finished");
 
             }
-            // bestimme roundWinner
-
-            if (participatingAIsCurrentRound.Count == 0)
-            {
-                roundWinner = currentPlayer;
-            }
             
-        }
-        // bestimme roundWinner
-        if (participatingAIsCurrentRound.Count != 0)
-        {
-            roundWinner = participatingAIsCurrentRound[0];
         }
 
         Debug.Log("RoundWinner is: " + roundWinner.name);
+
         for (int i = 0; i < handAI.Length; i++)
         {
             //Debug.Log("Player " + i + "s Hand: " + GetCardsString(handAI[i]));
@@ -257,7 +246,11 @@ public class GameMasterController : MonoBehaviour
             previousTurn.AddRange(lastCardsPlayed);
         }
 
-
+        if (currentPlayer == roundWinner)
+        {
+            playerFinished = false;
+        }
+ 
         if (currentPlayer.CompareTag("0"))
         {
             lastCardsPlayed.Clear();
@@ -278,12 +271,19 @@ public class GameMasterController : MonoBehaviour
             {
                 String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 0 played: " + play);
+                roundWinner = currentPlayer;
             }
             if (handAI[0].Count == 0)
             {
-                participatingAIsCurrentMatch.Remove(currentPlayer);
-                participatingAIsCurrentRound.Remove(currentPlayer);
+
+                 participatingAIsCurrentMatch.Remove(currentPlayer);
+                 participatingAIsCurrentRound.Remove(currentPlayer);
+
                 Debug.Log("Player 0 finished");
+
+
+                aIIndex = aIIndex % participatingAIsCurrentRound.Count;
+                roundWinner = participatingAIsCurrentMatch[aIIndex];
                 playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
                 {
@@ -318,13 +318,18 @@ public class GameMasterController : MonoBehaviour
             {
                 String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 1 played: " + play);
+                roundWinner = currentPlayer;
             }
 
             if (handAI[1].Count == 0)
             {
+
                 participatingAIsCurrentMatch.Remove(currentPlayer);
                 participatingAIsCurrentRound.Remove(currentPlayer);
+                
                 Debug.Log("Player 1 finished");
+                aIIndex = aIIndex % participatingAIsCurrentRound.Count;
+                roundWinner = participatingAIsCurrentMatch[aIIndex];
                 playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
                 {
@@ -355,13 +360,17 @@ public class GameMasterController : MonoBehaviour
             {
                 String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 2 played: " + play);
+                roundWinner = currentPlayer;
             }
 
             if (handAI[2].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
                 participatingAIsCurrentRound.Remove(currentPlayer);
+
                 Debug.Log("Player 2 finished");
+                aIIndex = aIIndex % participatingAIsCurrentRound.Count;
+                roundWinner = participatingAIsCurrentMatch[aIIndex];
                 playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
                 {
@@ -391,13 +400,17 @@ public class GameMasterController : MonoBehaviour
             {
                 String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 3 played: " + play);
+                roundWinner = currentPlayer;
             }
 
             if (handAI[3].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
                 participatingAIsCurrentRound.Remove(currentPlayer);
+
                 Debug.Log("Player 3 finished");
+                aIIndex = aIIndex % participatingAIsCurrentRound.Count;
+                roundWinner = participatingAIsCurrentMatch[aIIndex];
                 playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
                 {
