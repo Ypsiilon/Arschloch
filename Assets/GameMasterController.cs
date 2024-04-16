@@ -22,6 +22,9 @@ public class GameMasterController : MonoBehaviour
     public List<GameObject> participatingAIsCurrentMatch;
     public List<GameObject> participatingAIsCurrentRound;
 
+    private GameObject currentPlayer;
+    private bool playerFinished;
+    public bool tournamentIsFinished;
     private bool turnZero;
     private bool notFirstMatch;
     private bool firstRound;
@@ -52,23 +55,26 @@ public class GameMasterController : MonoBehaviour
         {
             handAI[i] = new List<GameObject>();
         }
-        StartOlympiade();
+        StartCoroutine(StartOlympiade());
     }
 
     // -------------------------------------------------------
     // Olympiade, Tournament, Match, Round, Turn
 
-    public void StartOlympiade()
+    public IEnumerator StartOlympiade()
     {
         for (int i = 0; i < tournamentCount; i++)
         {
             Debug.Log("Tournament " + i + " started.");
             StartCoroutine(StartTournament());
+            tournamentIsFinished = false;
+            yield return new WaitUntil(()=>tournamentIsFinished);
         }
         for (int i = 0; i < 4; i++)
         {
             Debug.Log("AI "+i+" got "+points[i]+" Points!");
         }
+        yield return null;
     }
 
     public IEnumerator StartTournament()
@@ -94,61 +100,10 @@ public class GameMasterController : MonoBehaviour
             //Debug.Log("knollo"+(Time.realtimeSinceStartup - ZW));
         }
 
+        tournamentIsFinished = true;
         yield return null;
     }
 
-    public String GetCardsString(List<GameObject> cards)
-    {
-        String tmp = "";
-        for (int g = 0; g < cards.Count; g++)
-        {
-            if (cards[g].GetComponent<CardData>().value == 11)
-            {
-                tmp += "Jack of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 12)
-            {
-                tmp += "Queen of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 13)
-            {
-                tmp += "King of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 14)
-            {
-                tmp += "Ace of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 15)
-            {
-                tmp += "Joker\n";
-            }
-            if(cards[g].GetComponent<CardData>().value>1 && cards[g].GetComponent<CardData>().value<11)
-            {
-                tmp += cards[g].GetComponent<CardData>().value.ToString() + " of";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 0)
-            {
-                tmp += " Hearts\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 1)
-            {
-                tmp += " Diamonds\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 2)
-            {
-                tmp += " Clubs\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 3)
-            {
-                tmp += " Spades\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 4)
-            {
-                tmp += " Joker\n";
-            }
-        }
-        return tmp;
-    }
 
     public void StartMatch()
     {
@@ -202,6 +157,8 @@ public class GameMasterController : MonoBehaviour
         turnZero = true;
         int w = 0;
 
+
+        //Arschloch fängt an 
         if (firstRound && notFirstMatch)
         {
             for (int i = 0; i < 4; i++)
@@ -213,6 +170,7 @@ public class GameMasterController : MonoBehaviour
             }
         }
         
+        //Gewinner letzter Runde fängt an
         if (roundWinner!=null)
         { 
             for(int i = 0;i < participatingAIsCurrentRound.Count;i++) 
@@ -223,8 +181,30 @@ public class GameMasterController : MonoBehaviour
                 }
             }
         }
+        for (int i = 0; i < 4; i++)
+        {
+            if (roundWinner == aIs[i])
+            {
+                if (handAI[i].Count==0)
+                {
+                    for (int j = 0; j < participatingAIsCurrentRound.Count; j++)
+                    {
+                        if (roundWinner == participatingAIsCurrentRound[j])
+                        {
+                            w = j + 1;
+                            w = w % participatingAIsCurrentRound.Count;
+                        }
+                    
+                    }
 
-        while (participatingAIsCurrentRound.Count > 1 )
+
+
+                }
+            }
+        }
+        playerFinished = false;
+
+        while ((participatingAIsCurrentRound.Count > 1) || (playerFinished && participatingAIsCurrentRound.Count >0))
         {
             int tempCount = participatingAIsCurrentRound.Count;
 
@@ -235,11 +215,29 @@ public class GameMasterController : MonoBehaviour
             {
                 w++;
             }
-            w = w % participatingAIsCurrentRound.Count;
+            if (participatingAIsCurrentRound.Count != 0)
+            {
+                w = w % participatingAIsCurrentRound.Count;
+            }
+            else 
+            {
+                Debug.Log("One Player Finished");
+
+            }
+            // bestimme roundWinner
+
+            if (participatingAIsCurrentRound.Count == 0)
+            {
+                roundWinner = currentPlayer;
+            }
             
         }
         // bestimme roundWinner
-        roundWinner = participatingAIsCurrentRound[0];
+        if (participatingAIsCurrentRound.Count != 0)
+        {
+            roundWinner = participatingAIsCurrentRound[0];
+        }
+
         Debug.Log("RoundWinner is: " + roundWinner.name);
         for (int i = 0; i < handAI.Length; i++)
         {
@@ -248,77 +246,22 @@ public class GameMasterController : MonoBehaviour
 
     }
 
-    public void GivePoints()
-    {
-
-
-
-        List<GameObject> winSup = new List<GameObject>();
-        winSup.Add(aIs[0]);
-        winSup.Add(aIs[1]);
-        winSup.Add(aIs[2]);
-        winSup.Add(aIs[3]);
-
-
-
-        for (int i = 0; i < 3; i++)
-        {
-            winSup.Remove(winIndex[i]);
-        }
-        winIndex[3] = winSup[0];
-
-
-        Debug.Log("k" + winIndex[0].name);
-        Debug.Log("k" + winIndex[1].name);
-        Debug.Log("k" + winIndex[2].name);
-        Debug.Log("k" + winIndex[3].name);
-
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                if (winIndex[i] == aIs[j])
-                {
-                    points[j] += 3 - i;
-                    Debug.Log("Rundenposition" + (i + 1) + "hat AI" + j + "belegt");
-
-                }
-
-            }
-            winIndex2[i] = winIndex[i];
-        }
-        gameObject.transform.GetChild(4).GetChild(0).gameObject.GetComponent<GraphScript>().UpdateGraph(points);
-
-        winIndex = new GameObject[4];
-
-    }
 
     public void StartTurn(int aIIndex)
     {
-        GameObject currentPlayer = participatingAIsCurrentRound[aIIndex];
+        currentPlayer = participatingAIsCurrentRound[aIIndex];
 
         if (lastCardsPlayed.Count != 0)
         {
             previousTurn.Clear();
             previousTurn.AddRange(lastCardsPlayed);
         }
+
+
         if (currentPlayer.CompareTag("0"))
         {
             lastCardsPlayed.Clear();
-            if (handAI[0].Count == 0)
-            {
-                participatingAIsCurrentMatch.Remove(currentPlayer);
-                participatingAIsCurrentRound.Remove(currentPlayer);
-                Debug.Log("Player 0 finished");
-                for (int k = 0; k < winIndex.Length; k++)
-                {
-                    if (winIndex[k] == null)
-                    {
-                        winIndex[k] = currentPlayer;
-                        break;
-                    }
-                }
-            }
+
             //Debug.Log("AI0 Hand Cards"+gameObject.GetComponent<GameMasterController>().GetCardsString(currentPlayer.GetComponent<BasicAI>().sortedHandCards));
             //Debug.Log("Player " + 0 + "s Hand: " + GetCardsString(handAI[0]));
             lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
@@ -336,15 +279,12 @@ public class GameMasterController : MonoBehaviour
                 String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 0 played: " + play);
             }
-        }
-        else if (currentPlayer.CompareTag("1"))
-        {
-            lastCardsPlayed.Clear();
-            if (handAI[1].Count == 0)
+            if (handAI[0].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
                 participatingAIsCurrentRound.Remove(currentPlayer);
-                Debug.Log("Player 1 finished");
+                Debug.Log("Player 0 finished");
+                playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
                 {
                     if (winIndex[k] == null)
@@ -354,6 +294,16 @@ public class GameMasterController : MonoBehaviour
                     }
                 }
             }
+
+            //if (lastCardsPlayed.Count == 0 && handAI[0].Count == 0)
+            //{ 
+            //    turnZero = true;
+            //}
+        }
+        else if (currentPlayer.CompareTag("1"))
+        {
+            lastCardsPlayed.Clear();
+
             lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
             for (int i = 0; i < lastCardsPlayed.Count; i++)
             {
@@ -369,15 +319,13 @@ public class GameMasterController : MonoBehaviour
                 String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 1 played: " + play);
             }
-        }
-        else if (currentPlayer.CompareTag("2"))
-        {
-            lastCardsPlayed.Clear();
-            if (handAI[2].Count == 0)
+
+            if (handAI[1].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
                 participatingAIsCurrentRound.Remove(currentPlayer);
-                Debug.Log("Player 2 finished");
+                Debug.Log("Player 1 finished");
+                playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
                 {
                     if (winIndex[k] == null)
@@ -387,6 +335,12 @@ public class GameMasterController : MonoBehaviour
                     }
                 }
             }
+
+        }
+        else if (currentPlayer.CompareTag("2"))
+        {
+            lastCardsPlayed.Clear();
+
             lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
             for (int i = 0; i < lastCardsPlayed.Count; i++)
             {
@@ -402,15 +356,13 @@ public class GameMasterController : MonoBehaviour
                 String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 2 played: " + play);
             }
-        }
-        else if (currentPlayer.CompareTag("3"))
-        {
-            lastCardsPlayed.Clear();
-            if (handAI[3].Count == 0)
+
+            if (handAI[2].Count == 0)
             {
                 participatingAIsCurrentMatch.Remove(currentPlayer);
                 participatingAIsCurrentRound.Remove(currentPlayer);
-                Debug.Log("Player 3 finished");
+                Debug.Log("Player 2 finished");
+                playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
                 {
                     if (winIndex[k] == null)
@@ -420,6 +372,11 @@ public class GameMasterController : MonoBehaviour
                     }
                 }
             }
+        }
+        else if (currentPlayer.CompareTag("3"))
+        {
+            lastCardsPlayed.Clear();
+
             lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
             for (int i = 0; i < lastCardsPlayed.Count; i++)
             {
@@ -434,6 +391,22 @@ public class GameMasterController : MonoBehaviour
             {
                 String play = GetCardsString(lastCardsPlayed);
                 Debug.Log("Player 3 played: " + play);
+            }
+
+            if (handAI[3].Count == 0)
+            {
+                participatingAIsCurrentMatch.Remove(currentPlayer);
+                participatingAIsCurrentRound.Remove(currentPlayer);
+                Debug.Log("Player 3 finished");
+                playerFinished = true;
+                for (int k = 0; k < winIndex.Length; k++)
+                {
+                    if (winIndex[k] == null)
+                    {
+                        winIndex[k] = currentPlayer;
+                        break;
+                    }
+                }
             }
         }
         discardPile.AddRange(lastCardsPlayed);
@@ -486,6 +459,7 @@ public class GameMasterController : MonoBehaviour
 
     public void SetNewTournamentPlayerOrder()
 {
+        tournamentPlayerOrder.Clear();
         int[] permutation = new int[4];
         permutation[0]=0;
         permutation[1]=1;
@@ -678,6 +652,101 @@ public class GameMasterController : MonoBehaviour
             handAI[j].AddRange(sortCards);
         }
 
+    }
+
+
+    public void GivePoints()
+    {
+
+
+
+        List<GameObject> winSup = new List<GameObject>();
+        winSup.Add(aIs[0]);
+        winSup.Add(aIs[1]);
+        winSup.Add(aIs[2]);
+        winSup.Add(aIs[3]);
+
+
+
+        for (int i = 0; i < 3; i++)
+        {
+            winSup.Remove(winIndex[i]);
+        }
+        winIndex[3] = winSup[0];
+
+
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (winIndex[i] == aIs[j])
+                {
+                    points[j] += 3 - i;
+                    Debug.Log("Rundenposition" + (i + 1) + "hat AI" + j + "belegt");
+
+                }
+
+            }
+            winIndex2[i] = winIndex[i];
+        }
+        gameObject.transform.GetChild(4).GetChild(0).gameObject.GetComponent<GraphScript>().UpdateGraph(points);
+
+        winIndex = new GameObject[4];
+
+    }
+
+
+    public String GetCardsString(List<GameObject> cards)
+    {
+        String tmp = "";
+        for (int g = 0; g < cards.Count; g++)
+        {
+            if (cards[g].GetComponent<CardData>().value == 11)
+            {
+                tmp += "Jack of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 12)
+            {
+                tmp += "Queen of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 13)
+            {
+                tmp += "King of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 14)
+            {
+                tmp += "Ace of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 15)
+            {
+                tmp += "Joker\n";
+            }
+            if (cards[g].GetComponent<CardData>().value > 1 && cards[g].GetComponent<CardData>().value < 11)
+            {
+                tmp += cards[g].GetComponent<CardData>().value.ToString() + " of";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 0)
+            {
+                tmp += " Hearts\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 1)
+            {
+                tmp += " Diamonds\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 2)
+            {
+                tmp += " Clubs\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 3)
+            {
+                tmp += " Spades\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 4)
+            {
+                tmp += " Joker\n";
+            }
+        }
+        return tmp;
     }
 
 }
