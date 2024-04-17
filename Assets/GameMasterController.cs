@@ -21,8 +21,10 @@ public class GameMasterController : MonoBehaviour
     public List<GameObject> tournamentPlayerOrder;
     public List<GameObject> participatingAIsCurrentMatch;
     public List<GameObject> participatingAIsCurrentRound;
+    private List<GameObject> roundWinnerTurn;
 
     private GameObject currentPlayer;
+    private bool lastPassed;
     private bool playerFinished;
     public bool tournamentIsFinished;
     private bool turnZero;
@@ -133,16 +135,25 @@ public class GameMasterController : MonoBehaviour
         }
 
         // Letzter Spieler hat Karten uebrig. Lege diese Karten auf DiscardPile
-        for (int i = 0; i < 4; i++)
+        if (participatingAIsCurrentMatch.Count != 0)
         {
-            if (participatingAIsCurrentMatch[0] == aIs[i])
+            for (int i = 0; i < 4; i++)
             {
-                discardPile.AddRange(handAI[i]);
-                handAI[i].Clear();
+                if (participatingAIsCurrentMatch[0] == aIs[i])
+                {
+                    discardPile.AddRange(handAI[i]);
+                    handAI[i].Clear();
 
-                Debug.Log("Last player returned his cards to the discardPile.");
+                    Debug.Log("Last player returned his cards to the discardPile.");
+                }
             }
         }
+        else 
+        {
+            Debug.Log("Last two players finished in the same round!");
+        }
+
+
         Debug.Log("deck:" + deck.Count);
         Debug.Log("discardPile: "+ discardPile.Count);
         GivePoints();
@@ -202,11 +213,14 @@ public class GameMasterController : MonoBehaviour
             }
         }
         playerFinished = false;
+        lastPassed = false;
         roundWinner = null;
-        while ((participatingAIsCurrentMatch.Count != 1) && ((participatingAIsCurrentRound.Count > 1) || (playerFinished && participatingAIsCurrentRound.Count >0)))
+        roundWinnerTurn = new List<GameObject>();
+
+        while (((participatingAIsCurrentRound.Count > 1) || (playerFinished && participatingAIsCurrentRound.Count > 0)))
         {
             int tempCount = participatingAIsCurrentRound.Count;
-
+            
             StartTurn(w);
             turnZero = false;
 
@@ -223,7 +237,7 @@ public class GameMasterController : MonoBehaviour
                 Debug.Log("One Player Finished");
 
             }
-            
+            //Debug.Log("lolo" + ((participatingAIsCurrentRound.Count > 1) || (playerFinished && participatingAIsCurrentRound.Count > 0)));
         }
 
         Debug.Log("RoundWinner is: " + roundWinner.name);
@@ -246,18 +260,14 @@ public class GameMasterController : MonoBehaviour
             previousTurn.AddRange(lastCardsPlayed);
         }
 
-        if (currentPlayer == roundWinner)
-        {
-            playerFinished = false;
-        }
- 
+
         if (currentPlayer.CompareTag("0"))
         {
             lastCardsPlayed.Clear();
 
             //Debug.Log("AI0 Hand Cards"+gameObject.GetComponent<GameMasterController>().GetCardsString(currentPlayer.GetComponent<BasicAI>().sortedHandCards));
             //Debug.Log("Player " + 0 + "s Hand: " + GetCardsString(handAI[0]));
-            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
+            lastCardsPlayed.AddRange(currentPlayer.GetComponent<NotSoBasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
             for (int i = 0; i < lastCardsPlayed.Count; i++)
             {
                 handAI[0].Remove(lastCardsPlayed[i]);
@@ -276,13 +286,10 @@ public class GameMasterController : MonoBehaviour
             if (handAI[0].Count == 0)
             {
 
-                 participatingAIsCurrentMatch.Remove(currentPlayer);
-                 participatingAIsCurrentRound.Remove(currentPlayer);
-
                 Debug.Log("Player 0 finished");
-
-
-                aIIndex = aIIndex % participatingAIsCurrentRound.Count;
+                roundWinnerTurn.AddRange(participatingAIsCurrentRound);
+                aIIndex++;
+                aIIndex = aIIndex % participatingAIsCurrentMatch.Count;
                 roundWinner = participatingAIsCurrentMatch[aIIndex];
                 playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
@@ -293,6 +300,8 @@ public class GameMasterController : MonoBehaviour
                         break;
                     }
                 }
+                participatingAIsCurrentMatch.Remove(currentPlayer);
+                participatingAIsCurrentRound.Remove(currentPlayer);
             }
 
             //if (lastCardsPlayed.Count == 0 && handAI[0].Count == 0)
@@ -323,12 +332,10 @@ public class GameMasterController : MonoBehaviour
 
             if (handAI[1].Count == 0)
             {
-
-                participatingAIsCurrentMatch.Remove(currentPlayer);
-                participatingAIsCurrentRound.Remove(currentPlayer);
-                
+                roundWinnerTurn.AddRange(participatingAIsCurrentRound);
                 Debug.Log("Player 1 finished");
-                aIIndex = aIIndex % participatingAIsCurrentRound.Count;
+                aIIndex++;
+                aIIndex = aIIndex % participatingAIsCurrentMatch.Count;
                 roundWinner = participatingAIsCurrentMatch[aIIndex];
                 playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
@@ -339,6 +346,9 @@ public class GameMasterController : MonoBehaviour
                         break;
                     }
                 }
+
+                participatingAIsCurrentMatch.Remove(currentPlayer);
+                participatingAIsCurrentRound.Remove(currentPlayer);
             }
 
         }
@@ -365,11 +375,10 @@ public class GameMasterController : MonoBehaviour
 
             if (handAI[2].Count == 0)
             {
-                participatingAIsCurrentMatch.Remove(currentPlayer);
-                participatingAIsCurrentRound.Remove(currentPlayer);
-
+                roundWinnerTurn.AddRange(participatingAIsCurrentRound);
                 Debug.Log("Player 2 finished");
-                aIIndex = aIIndex % participatingAIsCurrentRound.Count;
+                aIIndex++;
+                aIIndex = aIIndex % participatingAIsCurrentMatch.Count;
                 roundWinner = participatingAIsCurrentMatch[aIIndex];
                 playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
@@ -380,6 +389,8 @@ public class GameMasterController : MonoBehaviour
                         break;
                     }
                 }
+                participatingAIsCurrentMatch.Remove(currentPlayer);
+                participatingAIsCurrentRound.Remove(currentPlayer);
             }
         }
         else if (currentPlayer.CompareTag("3"))
@@ -405,11 +416,10 @@ public class GameMasterController : MonoBehaviour
 
             if (handAI[3].Count == 0)
             {
-                participatingAIsCurrentMatch.Remove(currentPlayer);
-                participatingAIsCurrentRound.Remove(currentPlayer);
-
+                roundWinnerTurn.AddRange(participatingAIsCurrentRound);
                 Debug.Log("Player 3 finished");
-                aIIndex = aIIndex % participatingAIsCurrentRound.Count;
+                aIIndex++;
+                aIIndex = aIIndex % participatingAIsCurrentMatch.Count;
                 roundWinner = participatingAIsCurrentMatch[aIIndex];
                 playerFinished = true;
                 for (int k = 0; k < winIndex.Length; k++)
@@ -420,8 +430,33 @@ public class GameMasterController : MonoBehaviour
                         break;
                     }
                 }
+                participatingAIsCurrentMatch.Remove(currentPlayer);
+                participatingAIsCurrentRound.Remove(currentPlayer);
             }
         }
+
+        if (lastPassed)
+        {
+            Debug.Log(playerFinished);
+            playerFinished = false;
+        }
+        roundWinnerTurn.Remove(currentPlayer);
+        if ( roundWinnerTurn.Count == 0)
+        {
+            playerFinished = false;
+            //lastPassed = true;
+            //Debug.Log("WI");
+        }
+
+        //if (lastCardsPlayed.Count == 0)
+        //{
+        //    lastPassed = true;
+        //}
+        //else
+        //{
+        //    lastPassed = false;
+        //}
+
         discardPile.AddRange(lastCardsPlayed);
     }
 
@@ -636,7 +671,7 @@ public class GameMasterController : MonoBehaviour
         {
             if (aIs[i].CompareTag("0"))
             {
-                aIs[i].GetComponent<BasicAI>().PreStart();
+                aIs[i].GetComponent<NotSoBasicAI>().PreStart();
             }
             else if (aIs[i].CompareTag("1"))
             {
@@ -666,7 +701,7 @@ public class GameMasterController : MonoBehaviour
         {
             if (aIs[i].CompareTag("0"))
             {
-                aIs[i].GetComponent<BasicAI>().ReceiveCards(handAI[i]);
+                aIs[i].GetComponent<NotSoBasicAI>().ReceiveCards(handAI[i]);
             }
             else if (aIs[i].CompareTag("1"))
             {

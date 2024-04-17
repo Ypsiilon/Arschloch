@@ -432,7 +432,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -7729165226687494766, guid: 80a1b4051d6201c4bb38059111f61701, type: 3}
       propertyPath: matchCount
-      value: 2000
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: -7729165226687494766, guid: 80a1b4051d6201c4bb38059111f61701, type: 3}
       propertyPath: aIs.Array.size
@@ -440,7 +440,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -7729165226687494766, guid: 80a1b4051d6201c4bb38059111f61701, type: 3}
       propertyPath: tournamentCount
-      value: 1
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: -7729165226687494766, guid: 80a1b4051d6201c4bb38059111f61701, type: 3}
       propertyPath: aIs.Array.data[0]
@@ -990,7 +990,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1381221212}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc6f6518013395947bcb478bd7f7c42b, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d1340d1314ac5346bc538fe6795877e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   swappedCards: []
