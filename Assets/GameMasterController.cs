@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -23,8 +22,6 @@ public class GameMasterController : MonoBehaviour
     public List<GameObject> participatingAIsCurrentRound;
 
     private bool turnZero;
-    private bool matchZero;
-    private int matchIndex;
 
     private GameObject roundWinner;
 
@@ -65,39 +62,85 @@ public class GameMasterController : MonoBehaviour
         }
         for (int i = 0; i < 4; i++)
         {
-            Debug.Log("AI " + i + " got " + points[i] + " Points!");
+            Debug.Log("AI "+i+" got "+points[i]+" Points!");
         }
     }
 
     public void StartTournament()
     {
         SetNewTournamentPlayerOrder();
-        matchZero = true;
+
         for (int l = 0; l < matchCount; l++)
         {
             Debug.Log("Match  " + l + " started.");
             StartMatch();
-            matchIndex++;
         }
     }
 
+    public String GetCardsString(List<GameObject> cards)
+    {
+        String tmp = "";
+        for (int g = 0; g < cards.Count; g++)
+        {
+            if (cards[g].GetComponent<CardData>().value == 11)
+            {
+                tmp += "Jack of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 12)
+            {
+                tmp += "Queen of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 13)
+            {
+                tmp += "King of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 14)
+            {
+                tmp += "Ace of";
+            }
+            if (cards[g].GetComponent<CardData>().value == 15)
+            {
+                tmp += "Joker\n";
+            }
+            else
+            {
+                tmp += cards[g].GetComponent<CardData>().value.ToString() + " of";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 0)
+            {
+                tmp += " Hearts\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 1)
+            {
+                tmp += " Diamonds\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 2)
+            {
+                tmp += " Clubs\n";
+            }
+            if (cards[g].GetComponent<CardData>().colour == 3)
+            {
+                tmp += " Spades\n";
+            }
+        }
+        return tmp;
+    }
 
     public void StartMatch()
     {
         // Set Match Participants
         participatingAIsCurrentMatch.AddRange(tournamentPlayerOrder);
 
-        roundWinner = null;
+        roundWinner = null; 
 
         Debug.Log(GetCardsString(deck));
         deck = ShuffleCards(deck);
         Debug.Log(GetCardsString(deck));
         GiveCards();
-        matchZero = true;
+
         while (participatingAIsCurrentMatch.Count > 1)
         {
             StartRound();
-            matchZero = false;
         }
 
         // Letzter Spieler hat Karten uebrig. Lege diese Karten auf DiscardPile
@@ -112,22 +155,21 @@ public class GameMasterController : MonoBehaviour
             }
         }
         Debug.Log("deck:" + deck.Count);
-        Debug.Log("discardPile: " + discardPile.Count);
+        Debug.Log("discardPile: "+ discardPile.Count);
         GivePoints();
         ResetMatchVariables();
     }
 
     public void StartRound()
     {
-
         turnZero = true;
         int w = 0;
         participatingAIsCurrentRound.Clear();
         participatingAIsCurrentRound.AddRange(participatingAIsCurrentMatch);
-
-        if (roundWinner != null)
-        {
-            for (int i = 0; i < participatingAIsCurrentRound.Count; i++)
+        
+        if (roundWinner!=null)
+        { 
+            for(int i = 0;i < participatingAIsCurrentRound.Count;i++) 
             {
                 if (roundWinner == participatingAIsCurrentRound[i])
                 {
@@ -136,7 +178,7 @@ public class GameMasterController : MonoBehaviour
             }
         }
 
-        while (participatingAIsCurrentRound.Count > 1)
+        while (participatingAIsCurrentRound.Count > 1 )
         {
             int tempCount = participatingAIsCurrentRound.Count;
 
@@ -148,7 +190,7 @@ public class GameMasterController : MonoBehaviour
                 w++;
             }
             w = w % participatingAIsCurrentRound.Count;
-
+            
         }
         // bestimme roundWinner
         roundWinner = participatingAIsCurrentRound[0];
@@ -160,6 +202,24 @@ public class GameMasterController : MonoBehaviour
 
     }
 
+    public void GivePoints()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (winIndex[i] == aIs[j])
+                {
+                    points[j] += 3 - i;
+                    Debug.Log("Rundenposition" + i + 1 + "hat AI" + j + "belegt");
+
+                }
+
+            }
+
+        }
+        winIndex = new GameObject[4];
+    }
 
     public void StartTurn(int aIIndex)
     {
@@ -187,7 +247,7 @@ public class GameMasterController : MonoBehaviour
                     }
                 }
             }
-            Debug.Log("AI0 Hand Cards" + gameObject.GetComponent<GameMasterController>().GetCardsString(currentPlayer.GetComponent<BasicAI>().sortedHandCards));
+            Debug.Log("AI0 Hand Cards"+gameObject.GetComponent<GameMasterController>().GetCardsString(currentPlayer.GetComponent<BasicAI>().sortedHandCards));
             Debug.Log("Player " + 0 + "s Hand: " + GetCardsString(handAI[0]));
             lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
             for (int i = 0; i < lastCardsPlayed.Count; i++)
@@ -308,78 +368,12 @@ public class GameMasterController : MonoBehaviour
     }
 
     // -------------------------------------------------------
-    // Basale Funktionen innerhalb eines Matches
+    // Basale Funktionen innerhalb eines Matches 
 
-    public void GivePoints()
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                if (winIndex[i] == aIs[j])
-                {
-                    points[j] += 3 - i;
-                    Debug.Log("Rundenposition" + i + 1 + "hat AI" + j + "belegt");
-
-                }
-
-            }
-
-        }
-        winIndex = new GameObject[4];
-    }
-    public String GetCardsString(List<GameObject> cards)
-    {
-        String tmp = "";
-        for (int g = 0; g < cards.Count; g++)
-        {
-            if (cards[g].GetComponent<CardData>().value == 11)
-            {
-                tmp += "Jack of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 12)
-            {
-                tmp += "Queen of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 13)
-            {
-                tmp += "King of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 14)
-            {
-                tmp += "Ace of";
-            }
-            if (cards[g].GetComponent<CardData>().value == 15)
-            {
-                tmp += "Joker\n";
-            }
-            else
-            {
-                tmp += cards[g].GetComponent<CardData>().value.ToString() + " of";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 0)
-            {
-                tmp += " Hearts\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 1)
-            {
-                tmp += " Diamonds\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 2)
-            {
-                tmp += " Clubs\n";
-            }
-            if (cards[g].GetComponent<CardData>().colour == 3)
-            {
-                tmp += " Spades\n";
-            }
-        }
-        return tmp;
-    }
 
     public void ResetMatchVariables()
     {
-        // Reset
+        // Reset 
         participatingAIsCurrentMatch.Clear();
         participatingAIsCurrentRound.Clear();
 
@@ -419,20 +413,20 @@ public class GameMasterController : MonoBehaviour
     }
 
     public void SetNewTournamentPlayerOrder()
-    {
+{
         int[] permutation = new int[4];
-        permutation[0] = 0;
-        permutation[1] = 1;
-        permutation[2] = 2;
-        permutation[3] = 3;
+        permutation[0]=0;
+        permutation[1]=1;
+        permutation[2]=2;
+        permutation[3]=3;
 
-        for (int i = 0; i < Random.Range(15, 20); i++)
+        for(int i = 0; i < Random.Range(15,20); i++) 
         {
-            int a = Random.Range(0, 4);
-            int b = Random.Range(0, 4);
-            (permutation[a], permutation[b]) = (permutation[b], permutation[a]);
+            int a =Random.Range(0,4);
+            int b=Random.Range(0,4);
+            (permutation[a],permutation[b])=(permutation[b],permutation[a]);
         }
-
+        
         tournamentPlayerOrder.Add(aIs[permutation[0]]);
         tournamentPlayerOrder.Add(aIs[permutation[1]]);
         tournamentPlayerOrder.Add(aIs[permutation[2]]);
@@ -512,12 +506,6 @@ public class GameMasterController : MonoBehaviour
                 handAI[i].Add(deck[0]);
                 deck.RemoveAt(0);
             }
-        }
-        if (!matchZero) {
-            SwapCards();
-        }
-        for (int i = 0; i < 4; i++)
-        {
             if (aIs[i].CompareTag("0"))
             {
                 aIs[i].GetComponent<BasicAI>().ReceiveCards(handAI[i]);
@@ -538,141 +526,7 @@ public class GameMasterController : MonoBehaviour
     }
     public void SwapCards()
     {
-        // Get two worst cards of winner
-        List<GameObject> worstTwoCards = SortHandCards(handAI[GetAIIndex(winIndex[0])]).GetRange(12, 13);
-        for (int i = 0; i > worstTwoCards.Count; i++)
-        {
-            handAI[GetAIIndex(winIndex[0])].Remove(worstTwoCards[i]);
-        }
-        if (winIndex[0].CompareTag("0"))
-        {
-            winIndex[0].GetComponent<BasicAI>().swappedCards = worstTwoCards;
-        }
-        else if (winIndex[0].CompareTag("1"))
-        {
-            winIndex[0].GetComponent<BasicAI>().swappedCards = worstTwoCards;
-        }
-        else if (winIndex[0].CompareTag("2"))
-        {
-            winIndex[0].GetComponent<BasicAI>().swappedCards = worstTwoCards;
-        }
-        else if (winIndex[0].CompareTag("3"))
-        {
-            winIndex[0].GetComponent<BasicAI>().swappedCards = worstTwoCards;
-        }
 
-        // Get worst card of second place
-        List<GameObject> worstCard = SortHandCards(handAI[GetAIIndex(winIndex[1])]).GetRange(13, 13);
-        for (int i = 0; i > worstCard.Count; i++)
-        {
-            handAI[GetAIIndex(winIndex[1])].Remove(worstCard[i]);
-        }
-        if (winIndex[1].CompareTag("0"))
-        {
-            winIndex[1].GetComponent<BasicAI>().swappedCards = worstCard;
-        }
-        else if (winIndex[1].CompareTag("1"))
-        {
-            winIndex[1].GetComponent<BasicAI>().swappedCards = worstCard;
-        }
-        else if (winIndex[1].CompareTag("2"))
-        {
-            winIndex[1].GetComponent<BasicAI>().swappedCards = worstCard;
-        }
-        else if (winIndex[1].CompareTag("3"))
-        {
-            winIndex[1].GetComponent<BasicAI>().swappedCards = worstCard;
-        }
-
-        // Get best card of third place
-        List<GameObject> bestCard = SortHandCards(handAI[GetAIIndex(winIndex[2])]).GetRange(0, 0);
-        for (int i = 0; i > bestCard.Count; i++)
-        {
-            handAI[GetAIIndex(winIndex[2])].Remove(bestCard[i]);
-        }
-        if (winIndex[2].CompareTag("0"))
-        {
-            winIndex[2].GetComponent<BasicAI>().swappedCards = bestCard;
-        }
-        else if (winIndex[2].CompareTag("1"))
-        {
-            winIndex[2].GetComponent<BasicAI>().swappedCards = bestCard;
-        }
-        else if (winIndex[2].CompareTag("2"))
-        {
-            winIndex[2].GetComponent<BasicAI>().swappedCards = bestCard;
-        }
-        else if (winIndex[2].CompareTag("3"))
-        {
-            winIndex[2].GetComponent<BasicAI>().swappedCards = bestCard;
-        }
-
-        // Get best two cards of Arschloch
-        List<GameObject> bestTwoCards = SortHandCards(handAI[GetAIIndex(winIndex[3])]).GetRange(0, 1);
-        for (int i = 0; i > bestTwoCards.Count; i++)
-        {
-            handAI[GetAIIndex(winIndex[3])].Remove(bestTwoCards[i]);
-        }
-        if (winIndex[3].CompareTag("0"))
-        {
-            winIndex[3].GetComponent<BasicAI>().swappedCards = bestTwoCards;
-        }
-        else if (winIndex[3].CompareTag("1"))
-        {
-            winIndex[3].GetComponent<BasicAI>().swappedCards = bestTwoCards;
-        }
-        else if (winIndex[3].CompareTag("2"))
-        {
-            winIndex[3].GetComponent<BasicAI>().swappedCards = bestTwoCards;
-        }
-        else if (winIndex[3].CompareTag("3"))
-        {
-            winIndex[3].GetComponent<BasicAI>().swappedCards = bestTwoCards;
-        }
-        handAI[GetAIIndex(winIndex[0])].AddRange(bestTwoCards);
-        handAI[GetAIIndex(winIndex[1])].AddRange(bestCard);
-        handAI[GetAIIndex(winIndex[2])].AddRange(worstCard);
-        handAI[GetAIIndex(winIndex[3])].AddRange(worstTwoCards);
-        Debug.Log("Winner and Arschloch swapped: " + GetCardsString(worstTwoCards) + " for "  + GetCardsString(bestTwoCards));
-        Debug.Log("Second place and third place swapped: " + GetCardsString(worstCard) + " for "  + GetCardsString(bestCard));
     }
-    private List<GameObject> SortHandCards(List<GameObject> handCards)
-    {
-        List<GameObject> sortedHandCards = new List<GameObject>();
 
-        for (int i = 2; i < 16; i++)
-        {
-            foreach (GameObject handCard in handCards)
-            {
-                if (handCard.GetComponent<CardData>().value == i)
-                {
-                    sortedHandCards.Add(handCard);
-                }
-            }
-        }
-        return sortedHandCards;
-    }
-    private int GetAIIndex(GameObject aI)
-    {
-        if (aI.CompareTag("0"))
-        {
-            return 0;
-        }
-        else if (aI.CompareTag("1"))
-        {
-            return 1;
-        }
-        else if (aI.CompareTag("2"))
-        {
-            return 2;
-        }
-        else if (aI.CompareTag("3"))
-        {
-            return 3;
-        }
-        else
-        {
-            throw new Exception("There is an imposter among us");
-        }
-    }
 }
