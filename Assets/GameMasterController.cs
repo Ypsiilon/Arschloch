@@ -397,7 +397,7 @@ public class GameMasterController : MonoBehaviour
         {
             lastCardsPlayed.Clear();
 
-            lastCardsPlayed.AddRange(currentPlayer.GetComponent<BasicAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
+            lastCardsPlayed.AddRange(currentPlayer.GetComponent<JeromesAI>().PlayCards(turnZero, discardPile, previousTurn, tournamentPlayerOrder, participatingAIsCurrentMatch, participatingAIsCurrentRound));
             for (int i = 0; i < lastCardsPlayed.Count; i++)
             {
                 handAI[3].Remove(lastCardsPlayed[i]);
@@ -683,7 +683,7 @@ public class GameMasterController : MonoBehaviour
             }
             else if (aIs[i].CompareTag("3"))
             {
-                aIs[i].GetComponent<BasicAI>().PreStart();
+                aIs[i].GetComponent<JeromesAI>().PreStart();
             }
             for (int j = 0; j < 14; j++)
             {
@@ -713,7 +713,7 @@ public class GameMasterController : MonoBehaviour
             }
             else if (aIs[i].CompareTag("3"))
             {
-                aIs[i].GetComponent<BasicAI>().ReceiveCards(handAI[i]);
+                aIs[i].GetComponent<JeromesAI>().ReceiveCards(handAI[i]);
             }
         }
 
