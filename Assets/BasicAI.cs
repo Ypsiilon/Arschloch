@@ -77,8 +77,8 @@ public class BasicAI : MonoBehaviour, Interface
             {
                 if(sortedHandCards[i].GetComponent<CardData>().value >= valuePlayed)
                 {
-                   if(sortedHandCards[i].GetComponent<CardData>().value==sortedHandCards[i+previousTurn.Count-1].GetComponent<CardData>().value)
-                   {
+                    if(sortedHandCards[i].GetComponent<CardData>().value==sortedHandCards[i+previousTurn.Count-1].GetComponent<CardData>().value)
+                    {
                             for (int j =i ;j <= i+previousTurn.Count-1 ;j++)
                             {
                                 cardsToPlay.Add(sortedHandCards[j]);
@@ -94,7 +94,7 @@ public class BasicAI : MonoBehaviour, Interface
                             {
                                 return cardsToPlay;
                             }
-                   }     
+                    }
                 }    
 
             }
